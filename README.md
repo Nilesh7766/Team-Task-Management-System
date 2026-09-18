@@ -254,5 +254,5 @@ docs/                     Database notes, API notes, Postman collection, demo sc
 * \[x] README with setup steps, sample credentials, and the stack
 * \[x] GitHub Actions CI
 * \[ ] Deployed demo link — https://github.com/Nilesh7766/Team-Task-Management-System.git
-* \[ ] 5–8 minute walkthrough video — add the link here (`docs/DEMO\_SCRIPT.md` has a running order)
+* \[ ] 5–8 minute walkthrough video — https://drive.google.com/drive/folders/1v1iO69jpAMkOP9Dsz2PynqBcKOyGnbhW
 
