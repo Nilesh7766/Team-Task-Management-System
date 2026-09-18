@@ -1,0 +1,47 @@
+@model TaskFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="note bad validation-summary-errors" role="alert"></div>
+<input type="hidden" asp-for="Id" />
+
+<div class="field">
+    <label asp-for="Title"></label>
+    <input asp-for="Title" placeholder="What needs to be done?" />
+    <span asp-validation-for="Title" class="field-validation-error"></span>
+</div>
+
+<div class="field">
+    <label asp-for="Description"></label>
+    <textarea asp-for="Description" placeholder="Context, acceptance criteria, links."></textarea>
+    <span asp-validation-for="Description" class="field-validation-error"></span>
+</div>
+
+<div class="field-row three">
+    <div class="field">
+        <label asp-for="Status"></label>
+        <select asp-for="Status" asp-items="Html.GetEnumSelectList<TaskState>()"></select>
+    </div>
+    <div class="field">
+        <label asp-for="Priority"></label>
+        <select asp-for="Priority" asp-items="Html.GetEnumSelectList<TaskPriority>()"></select>
+    </div>
+    <div class="field">
+        <label asp-for="DueDate"></label>
+        <input asp-for="DueDate" type="date" />
+    </div>
+</div>
+
+<div class="field-row">
+    <div class="field">
+        <label asp-for="AssignedToUserId"></label>
+        <select asp-for="AssignedToUserId" asp-items="Model.AssignableUsers">
+            <option value="">Leave unassigned</option>
+        </select>
+        <span class="hint">The person you pick gets an email and an in-app notification.</span>
+    </div>
+    <div class="field">
+        <label asp-for="TeamId"></label>
+        <select asp-for="TeamId" asp-items="Model.Teams">
+            <option value="">No team</option>
+        </select>
+    </div>
+</div>

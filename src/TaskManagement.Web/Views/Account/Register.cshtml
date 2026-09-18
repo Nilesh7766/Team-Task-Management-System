@@ -1,0 +1,41 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Create account";
+    Layout = "_AuthLayout";
+}
+
+<h1>Create your account</h1>
+@* <p class="sub">New accounts start with the User role. An administrator can promote you later.</p> *@
+
+<form asp-action="Register" method="post">
+    <div asp-validation-summary="ModelOnly" class="note bad validation-summary-errors" role="alert"></div>
+
+    <div class="field">
+        <label asp-for="FullName"></label>
+        <input asp-for="FullName" autocomplete="name" autofocus />
+        <span asp-validation-for="FullName" class="field-validation-error"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" autocomplete="email" />
+        <span asp-validation-for="Email" class="field-validation-error"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" autocomplete="new-password" />
+        <span asp-validation-for="Password" class="field-validation-error"></span>
+        <span class="hint">At least 8 characters, with an uppercase letter, a lowercase letter, a digit and a special character.</span>
+    </div>
+
+    <div class="field">
+        <label asp-for="ConfirmPassword"></label>
+        <input asp-for="ConfirmPassword" type="password" autocomplete="new-password" />
+        <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+    </div>
+
+    <button class="btn" type="submit">Create account</button>
+</form>
+
+<p class="hint" style="margin-top:.9rem;">Already registered? <a asp-action="Login">Sign in</a>.</p>

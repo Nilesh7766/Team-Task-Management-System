@@ -1,0 +1,62 @@
+@model List<NotificationDto>
+@{
+    ViewData["Title"] = "Notifications";
+    var unreadOnly = (bool)(ViewBag.UnreadOnly ?? false);
+}
+
+<div class="page-head">
+    <div>
+        <h1>Notifications</h1>
+        <p class="sub">Assignments, status changes and comments on tasks you are part of.</p>
+    </div>
+    <div class="btn-row">
+        @if (unreadOnly)
+        {
+            <a class="btn secondary" asp-action="Index">Show all</a>
+        }
+        else
+        {
+            <a class="btn secondary" asp-action="Index" asp-route-unreadOnly="true">Unread only</a>
+        }
+        <form asp-action="MarkAllRead" method="post" class="inline-form">
+            <button class="btn" type="submit">Mark all as read</button>
+        </form>
+    </div>
+</div>
+
+<div class="panel">
+    @if (!Model.Any())
+    {
+        <div class="empty"><p>Nothing here. Notifications arrive when a task is assigned to you or its status changes.</p></div>
+    }
+    else
+    {
+        <div class="notice-list">
+        @foreach (var n in Model)
+        {
+            <div class="notice-item @(n.IsRead ? "" : "unread")">
+                <div>
+                    <div><strong>@n.Title</strong></div>
+                    <div class="msg">@n.Message</div>
+                    <div class="when" style="font-family:var(--mono);font-size:.78rem;color:var(--ink-faint);">
+                        @n.CreatedAt.ToString("dd MMM yyyy HH:mm") · @n.Type
+                    </div>
+                </div>
+                <div class="btn-row">
+                    @if (n.TaskItemId.HasValue)
+                    {
+                        <a class="btn secondary small" asp-controller="Tasks" asp-action="Details" asp-route-id="@n.TaskItemId">Open task</a>
+                    }
+                    @if (!n.IsRead)
+                    {
+                        <form asp-action="MarkRead" method="post" class="inline-form">
+                            <input type="hidden" name="id" value="@n.Id" />
+                            <button class="btn secondary small" type="submit">Mark read</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+        </div>
+    }
+</div>

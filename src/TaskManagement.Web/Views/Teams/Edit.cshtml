@@ -1,0 +1,30 @@
+@model TeamFormViewModel
+@{
+    ViewData["Title"] = "Edit team";
+}
+
+<div class="page-head">
+    <div><h1>Edit team</h1></div>
+</div>
+
+<div class="panel">
+    <form asp-action="Edit" method="post">
+        @await Html.PartialAsync("_Form", Model)
+        <div class="btn-row">
+            <button class="btn" type="submit">Save changes</button>
+            <a class="btn secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@if (User.IsInRole("Admin"))
+{
+    <div class="panel">
+        <h2>Delete this team</h2>
+        <p>Members and tasks stay, but they are no longer linked to a team.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+              onsubmit="return confirm('Delete this team?');">
+            <button class="btn danger" type="submit">Delete team</button>
+        </form>
+    </div>
+}

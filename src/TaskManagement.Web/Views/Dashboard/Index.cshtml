@@ -1,0 +1,332 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var total = Model.TotalCount;
+    var todoPct = total > 0 ? (Model.ToDoCount * 100.0 / total) : 0;
+    var progressPct = total > 0 ? (Model.InProgressCount * 100.0 / total) : 0;
+    var donePct = total > 0 ? (Model.DoneCount * 100.0 / total) : 0;
+}
+
+<div class="page-head dashboard-head">
+    <div>
+        <h1>Hello, @Model.DisplayName</h1>
+        <p class="sub">
+            @(Model.Role switch {
+                UserRole.Admin => "Everything across every team.",
+                UserRole.Manager => "Your teams and the work you have assigned.",
+                _ => "The tasks assigned to you."
+            })
+        </p>
+    </div>
+
+    <div class="btn-row">
+        @if (Model.Role != UserRole.User)
+        {
+            <a class="btn" asp-controller="Tasks" asp-action="Create">New task</a>
+        }
+        <a class="btn secondary" asp-controller="Tasks" asp-action="Index">All tasks</a>
+    </div>
+</div>
+
+<!-- ==========================================================
+     TASK STATUS DISTRIBUTION
+     ========================================================== -->
+<div class="panel dashboard-chart-panel">
+    <div class="chart-panel-head">
+        <div>
+            <h2>TASK STATUS DISTRIBUTION</h2>
+            <p class="chart-subtitle">Current task distribution for your access scope.</p>
+        </div>
+
+        <div class="chart-switch" role="tablist" aria-label="Task chart view">
+            <button type="button" class="chart-btn active" data-chart="pieChart">Pie</button>
+            <button type="button" class="chart-btn" data-chart="barChart">Bar</button>
+            <button type="button" class="chart-btn" data-chart="gridChart">Grid</button>
+        </div>
+    </div>
+
+    @if (total == 0)
+    {
+        <div class="chart-empty-state">
+            <p>No tasks here yet.</p>
+            @if (Model.Role != UserRole.User)
+            {
+                <a class="btn" asp-controller="Tasks" asp-action="Create">Create the first task</a>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- PIE VIEW -->
+        <div id="pieChart" class="chart-view active">
+            <div class="pie-chart-layout">
+                <div class="pie-chart-wrap">
+                    <div class="status-pie"
+                         style="--todo-pct:@todoPct%; --progress-pct:@progressPct%;">
+                        <div class="pie-hole">
+                            <strong>@total</strong>
+                            <span>Total Tasks</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-legend">
+                    <div class="legend-row">
+                        <span class="legend-marker todo-marker"></span>
+                        <div class="legend-copy">
+                            <span>To Do</span>
+                            <strong>@Model.ToDoCount <small>(@todoPct.ToString("0.#")%)</small></strong>
+                        </div>
+                    </div>
+
+                    <div class="legend-row">
+                        <span class="legend-marker progress-marker"></span>
+                        <div class="legend-copy">
+                            <span>In Progress</span>
+                            <strong>@Model.InProgressCount <small>(@progressPct.ToString("0.#")%)</small></strong>
+                        </div>
+                    </div>
+
+                    <div class="legend-row">
+                        <span class="legend-marker done-marker"></span>
+                        <div class="legend-copy">
+                            <span>Done</span>
+                            <strong>@Model.DoneCount <small>(@donePct.ToString("0.#")%)</small></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BAR VIEW -->
+        <div id="barChart" class="chart-view">
+            <div class="horizontal-bars">
+                <div class="chart-bar-row">
+                    <div class="chart-bar-label">
+                        <span>To Do</span>
+                        <strong>@Model.ToDoCount</strong>
+                    </div>
+                    <div class="chart-bar-track">
+                        <div class="chart-bar-fill todo-fill" style="width:@todoPct%;"></div>
+                    </div>
+                </div>
+
+                <div class="chart-bar-row">
+                    <div class="chart-bar-label">
+                        <span>In Progress</span>
+                        <strong>@Model.InProgressCount</strong>
+                    </div>
+                    <div class="chart-bar-track">
+                        <div class="chart-bar-fill progress-fill" style="width:@progressPct%;"></div>
+                    </div>
+                </div>
+
+                <div class="chart-bar-row">
+                    <div class="chart-bar-label">
+                        <span>Done</span>
+                        <strong>@Model.DoneCount</strong>
+                    </div>
+                    <div class="chart-bar-track">
+                        <div class="chart-bar-fill done-fill" style="width:@donePct%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRID VIEW -->
+        <div id="gridChart" class="chart-view">
+            <div class="table-scroll">
+                <table class="distribution-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Task Count</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="status-marker todo-marker"></span>To Do</td>
+                            <td>@Model.ToDoCount</td>
+                            <td>@todoPct.ToString("0.#")%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="status-marker progress-marker"></span>In Progress</td>
+                            <td>@Model.InProgressCount</td>
+                            <td>@progressPct.ToString("0.#")%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="status-marker done-marker"></span>Done</td>
+                            <td>@Model.DoneCount</td>
+                            <td>@donePct.ToString("0.#")%</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>Total</strong></td>
+                            <td><strong>@total</strong></td>
+                            <td><strong>100%</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- ==========================================================
+     SUMMARY CARDS
+     ========================================================== -->
+<div class="grid cols-4 dashboard-stats">
+    <div class="stat todo">
+        <div class="n">@Model.ToDoCount</div>
+        <div class="k">To Do</div>
+    </div>
+    <div class="stat progress">
+        <div class="n">@Model.InProgressCount</div>
+        <div class="k">In Progress</div>
+    </div>
+    <div class="stat done">
+        <div class="n">@Model.DoneCount</div>
+        <div class="k">Done</div>
+    </div>
+    <div class="stat overdue">
+        <div class="n">@Model.OverdueCount</div>
+        <div class="k">Past deadline</div>
+    </div>
+</div>
+
+<!-- ==========================================================
+     DEADLINES + ACTIVITY
+     ========================================================== -->
+<div class="grid cols-2 dashboard-section-grid">
+    <div class="panel">
+        <h2>Next deadlines</h2>
+        @if (!Model.DueSoon.Any())
+        {
+            <div class="empty"><p>Nothing with a deadline is open right now.</p></div>
+        }
+        else
+        {
+            foreach (var task in Model.DueSoon)
+            {
+                @await Html.PartialAsync("_TaskRow", task)
+            }
+        }
+    </div>
+
+    <div class="panel">
+        <h2>Recent activity</h2>
+        @if (!Model.RecentlyUpdated.Any())
+        {
+            <div class="empty"><p>No activity yet.</p></div>
+        }
+        else
+        {
+            foreach (var task in Model.RecentlyUpdated)
+            {
+                @await Html.PartialAsync("_TaskRow", task)
+            }
+        }
+    </div>
+</div>
+
+<!-- ==========================================================
+     TEAMS + NOTIFICATIONS
+     ========================================================== -->
+<div class="grid cols-2 dashboard-section-grid">
+    <div class="panel">
+        <h2>Your teams</h2>
+        @if (!Model.Teams.Any())
+        {
+            <div class="empty"><p>You are not part of a team yet.</p></div>
+        }
+        else
+        {
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Lead</th>
+                            <th>People</th>
+                            <th>Open</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var team in Model.Teams)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Teams" asp-action="Details" asp-route-id="@team.Id">
+                                    @team.Name
+                                </a>
+                            </td>
+                            <td>@(team.ManagerName ?? "Unassigned")</td>
+                            <td>@team.MemberCount</td>
+                            <td>@team.OpenTaskCount</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="panel">
+        <h2>Latest notifications</h2>
+        @if (!Model.Notifications.Any())
+        {
+            <div class="empty"><p>Notifications about your tasks will show up here.</p></div>
+        }
+        else
+        {
+            foreach (var n in Model.Notifications)
+            {
+                <div class="notice-item @(n.IsRead ? "" : "unread")">
+                    <div>
+                        <div><strong>@n.Title</strong></div>
+                        <div class="msg">@n.Message</div>
+                    </div>
+                    <div class="comment">
+                        <span class="when">@n.CreatedAt.ToString("dd MMM HH:mm")</span>
+                    </div>
+                </div>
+            }
+            <p style="margin-top:.8rem;">
+                <a asp-controller="Notifications" asp-action="Index">See all notifications</a>
+            </p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll(".chart-btn");
+        const views = document.querySelectorAll(".chart-view");
+
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                const targetId = button.getAttribute("data-chart");
+
+                buttons.forEach(function (item) {
+                    item.classList.remove("active");
+                    item.setAttribute("aria-selected", "false");
+                });
+
+                views.forEach(function (view) {
+                    view.classList.remove("active");
+                });
+
+                button.classList.add("active");
+                button.setAttribute("aria-selected", "true");
+
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.classList.add("active");
+                }
+            });
+        });
+    });
+</script>
+}

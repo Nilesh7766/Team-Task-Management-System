@@ -1,0 +1,90 @@
+@model TeamDetailsViewModel
+@{
+    ViewData["Title"] = Model.Team.Name;
+    var team = Model.Team;
+}
+
+<div class="page-head">
+    <div>
+        <h1>@team.Name</h1>
+        <p class="sub">@(string.IsNullOrWhiteSpace(team.Description) ? "No description yet." : team.Description)</p>
+    </div>
+    <div class="btn-row">
+        @if (Model.CanManageMembers)
+        {
+            <a class="btn secondary" asp-action="Edit" asp-route-id="@team.Id">Edit team</a>
+        }
+        <a class="btn secondary" asp-action="Index">All teams</a>
+    </div>
+</div>
+
+<div class="grid cols-3" style="margin-bottom:1rem;">
+    <div class="stat"><div class="n">@team.MemberCount</div><div class="k">People</div></div>
+    <div class="stat progress"><div class="n">@team.OpenTaskCount</div><div class="k">Open tasks</div></div>
+    <div class="stat"><div class="n" style="font-size:1.1rem;padding-top:.5rem;">@(team.ManagerName ?? "Unassigned")</div><div class="k">Team lead</div></div>
+</div>
+
+<div class="panel">
+    <h2>Members</h2>
+    @if (!team.Members.Any())
+    {
+        <div class="empty"><p>Nobody is in this team yet.</p></div>
+    }
+    else
+    {
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th>Name</th><th>Email</th><th>Role</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var member in team.Members)
+                {
+                    <tr>
+                        <td>@member.FullName</td>
+                        <td>@member.Email</td>
+                        <td><span class="pill role-@member.Role">@member.Role</span></td>
+                        <td>
+                            @if (Model.CanManageMembers)
+                            {
+                                <form asp-action="RemoveMember" method="post" class="inline-form">
+                                    <input type="hidden" name="id" value="@team.Id" />
+                                    <input type="hidden" name="userId" value="@member.Id" />
+                                    <button class="btn danger small" type="submit">Remove</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (Model.CanManageMembers)
+    {
+        <form asp-action="AddMember" method="post" style="margin-top:1rem;">
+            <input type="hidden" name="id" value="@team.Id" />
+            <div class="field">
+                <label for="userId">Add someone to this team</label>
+                <select id="userId" name="userId" required asp-items="Model.AddableUsers">
+                    <option value="">Choose a person</option>
+                </select>
+            </div>
+            <button class="btn" type="submit">Add to team</button>
+        </form>
+    }
+</div>
+
+<div class="panel">
+    <h2>Team tasks</h2>
+    @if (!Model.Tasks.Any())
+    {
+        <div class="empty"><p>This team has no tasks yet.</p></div>
+    }
+    else
+    {
+        foreach (var task in Model.Tasks)
+        {
+            @await Html.PartialAsync("_TaskRow", task)
+        }
+    }
+</div>

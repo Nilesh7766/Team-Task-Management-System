@@ -1,0 +1,24 @@
+@model TeamFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="note bad validation-summary-errors" role="alert"></div>
+<input type="hidden" asp-for="Id" />
+
+<div class="field">
+    <label asp-for="Name"></label>
+    <input asp-for="Name" placeholder="Platform Engineering" />
+    <span asp-validation-for="Name" class="field-validation-error"></span>
+</div>
+
+<div class="field">
+    <label asp-for="Description"></label>
+    <textarea asp-for="Description" placeholder="What this team is responsible for."></textarea>
+    <span asp-validation-for="Description" class="field-validation-error"></span>
+</div>
+
+<div class="field">
+    <label asp-for="ManagerId"></label>
+    <select asp-for="ManagerId" asp-items="Model.Managers" disabled="@(!User.IsInRole("Admin"))">
+        <option value="">No lead yet</option>
+    </select>
+    <span class="hint">Only an administrator can change who leads a team.</span>
+</div>

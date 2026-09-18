@@ -1,0 +1,93 @@
+@model TaskListViewModel
+@{
+    ViewData["Title"] = "Tasks";
+}
+
+<div class="page-head">
+    <div>
+        <h1>Tasks</h1>
+        <p class="sub">@Model.Tasks.Count task@(Model.Tasks.Count == 1 ? "" : "s") match your filters.</p>
+    </div>
+    @if (Model.CanCreate)
+    {
+        <a class="btn" asp-action="Create">New task</a>
+    }
+</div>
+
+<form method="get" class="panel" role="search">
+    <h2>Filter</h2>
+    <div class="field-row three">
+        <div class="field">
+            <label for="Status">Status</label>
+            <select id="Status" name="Status">
+                <option value="">Any status</option>
+                @foreach (var state in Enum.GetValues<TaskState>())
+                {
+                    <option value="@state" selected="@(Model.Filter.Status == state)">
+                        @(state == TaskState.ToDo ? "To Do" : state == TaskState.InProgress ? "In Progress" : "Done")
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="field">
+            <label for="Priority">Priority</label>
+            <select id="Priority" name="Priority">
+                <option value="">Any priority</option>
+                @foreach (var priority in Enum.GetValues<TaskPriority>())
+                {
+                    <option value="@priority" selected="@(Model.Filter.Priority == priority)">@priority</option>
+                }
+            </select>
+        </div>
+        <div class="field">
+            <label for="AssignedToUserId">Assigned to</label>
+            <select id="AssignedToUserId" name="AssignedToUserId">
+                <option value="">Anyone</option>
+                @foreach (var option in Model.AssignableUsers)
+                {
+                    <option value="@option.Value" selected="@(Model.Filter.AssignedToUserId?.ToString() == option.Value)">@option.Text</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="field-row three">
+        <div class="field">
+            <label for="DueFrom">Deadline from</label>
+            <input type="date" id="DueFrom" name="DueFrom" value="@(Model.Filter.DueFrom?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div class="field">
+            <label for="DueTo">Deadline to</label>
+            <input type="date" id="DueTo" name="DueTo" value="@(Model.Filter.DueTo?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div class="field">
+            <label for="Search">Search</label>
+            <input type="search" id="Search" name="Search" value="@Model.Filter.Search" placeholder="Title or description" />
+        </div>
+    </div>
+
+    <div class="btn-row">
+        <label style="display:flex;align-items:center;gap:.4rem;font-weight:400;">
+            <input type="checkbox" name="OnlyOverdue" value="true" style="width:auto;"
+                   @(Model.Filter.OnlyOverdue ? "checked" : "") />
+            Past deadline only
+        </label>
+        <button class="btn" type="submit">Apply filters</button>
+        <a class="btn secondary" asp-action="Index">Clear</a>
+    </div>
+</form>
+
+@if (!Model.Tasks.Any())
+{
+    <div class="empty">
+        <p>No tasks match these filters.</p>
+        <a class="btn secondary" asp-action="Index">Clear the filters</a>
+    </div>
+}
+else
+{
+    foreach (var task in Model.Tasks)
+    {
+        @await Html.PartialAsync("_TaskRow", task)
+    }
+}

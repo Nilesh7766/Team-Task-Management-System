@@ -1,0 +1,109 @@
+@model TaskDetailsViewModel
+@{
+    ViewData["Title"] = Model.Task.Title;
+    var task = Model.Task;
+    var statusLabel = task.Status == "InProgress" ? "In Progress" : task.Status == "ToDo" ? "To Do" : "Done";
+}
+
+<div class="page-head">
+    <div>
+        <h1>@task.Title</h1>
+        <p class="sub">
+            <span class="pill status-@task.Status">@statusLabel</span>
+            <span class="pill prio-@task.Priority">@task.Priority priority</span>
+            @if (task.IsOverdue)
+            {
+                <span class="pill danger">Past deadline</span>
+            }
+        </p>
+    </div>
+    <div class="btn-row">
+        @if (Model.CanEdit)
+        {
+            <a class="btn secondary" asp-action="Edit" asp-route-id="@task.Id">Edit</a>
+        }
+        <a class="btn secondary" asp-action="Index">Back to tasks</a>
+    </div>
+</div>
+
+<div class="grid cols-2">
+    <div class="panel">
+        <h2>Details</h2>
+        @if (string.IsNullOrWhiteSpace(task.Description))
+        {
+            <p class="hint">No description was added.</p>
+        }
+        else
+        {
+            <p style="white-space:pre-wrap;">@task.Description</p>
+        }
+
+        <div class="table-scroll">
+            <table>
+                <tbody>
+                <tr><th>Assigned to</th><td>@(task.AssignedToName ?? "Unassigned")</td></tr>
+                <tr><th>Team</th><td>@(task.TeamName ?? "No team")</td></tr>
+                <tr><th>Deadline</th><td>@(task.DueDate?.ToString("dd MMM yyyy") ?? "No deadline")</td></tr>
+                <tr><th>Created by</th><td>@task.CreatedByName on @task.CreatedAt.ToString("dd MMM yyyy")</td></tr>
+                <tr><th>Last updated</th><td>@(task.UpdatedAt?.ToString("dd MMM yyyy HH:mm") ?? "Not edited yet")</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Move this task</h2>
+        @if (Model.CanChangeStatus)
+        {
+            <p class="hint">Everyone involved gets a notification when the status changes.</p>
+            <div class="btn-row">
+                @foreach (var state in Enum.GetValues<TaskState>())
+                {
+                    var label = state == TaskState.ToDo ? "To Do" : state == TaskState.InProgress ? "In Progress" : "Done";
+                    var isCurrent = task.Status == state.ToString();
+                    <form asp-action="ChangeStatus" method="post" class="inline-form">
+                        <input type="hidden" name="id" value="@task.Id" />
+                        <input type="hidden" name="status" value="@state" />
+                        <button class="btn @(isCurrent ? "" : "secondary") small" type="submit" disabled="@isCurrent">
+                            @(isCurrent ? label + " (current)" : "Move to " + label)
+                        </button>
+                    </form>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="hint">Only the assignee, the task owner or an administrator can change the status.</p>
+        }
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Comments (@Model.Comments.Count)</h2>
+
+    @if (!Model.Comments.Any())
+    {
+        <div class="empty"><p>No comments yet. Start the conversation below.</p></div>
+    }
+    else
+    {
+        foreach (var comment in Model.Comments)
+        {
+            <div class="comment">
+                <span class="who">@comment.UserName</span>
+                <span class="when"> · @comment.CreatedAt.ToString("dd MMM yyyy HH:mm")</span>
+                <p style="white-space:pre-wrap;">@comment.Text</p>
+            </div>
+        }
+    }
+
+    <form asp-action="AddComment" method="post" style="margin-top:1rem;">
+        <input type="hidden" name="id" value="@task.Id" />
+        <div class="field">
+            <label for="newComment">Add a comment</label>
+            <textarea id="newComment" name="newComment" required maxlength="1000"
+                      placeholder="Share an update, a blocker or a question."></textarea>
+        </div>
+        <button class="btn" type="submit">Post comment</button>
+    </form>
+</div>

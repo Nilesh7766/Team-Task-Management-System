@@ -1,0 +1,21 @@
+@model TeamFormViewModel
+@{
+    ViewData["Title"] = "New team";
+}
+
+<div class="page-head">
+    <div>
+        <h1>New team</h1>
+        <p class="sub">Create the team first, then add people to it.</p>
+    </div>
+</div>
+
+<div class="panel">
+    <form asp-action="Create" method="post">
+        @await Html.PartialAsync("_Form", Model)
+        <div class="btn-row">
+            <button class="btn" type="submit">Create team</button>
+            <a class="btn secondary" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</div>

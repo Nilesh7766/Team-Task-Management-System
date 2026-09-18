@@ -1,0 +1,30 @@
+@model TaskFormViewModel
+@{
+    ViewData["Title"] = "Edit task";
+}
+
+<div class="page-head">
+    <div>
+        <h1>Edit task</h1>
+        <p class="sub">Changes to the assignee or the status notify everyone involved.</p>
+    </div>
+</div>
+
+<div class="panel">
+    <form asp-action="Edit" method="post">
+        @await Html.PartialAsync("_Form", Model)
+        <div class="btn-row">
+            <button class="btn" type="submit">Save changes</button>
+            <a class="btn secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<div class="panel">
+    <h2>Delete this task</h2>
+    <p>Deleting removes the task and its comments for everyone.</p>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+          onsubmit="return confirm('Delete this task and its comments?');">
+        <button class="btn danger" type="submit">Delete task</button>
+    </form>
+</div>

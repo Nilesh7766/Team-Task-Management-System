@@ -1,0 +1,74 @@
+@model UserListViewModel
+@{
+    ViewData["Title"] = "People";
+}
+
+<div class="page-head">
+    <div>
+        <h1>People</h1>
+        <p class="sub">Set roles, move people between teams, and switch accounts off when they leave.</p>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="table-scroll">
+        <table>
+            <thead>
+            <tr><th>Name</th><th>Email</th><th>Role</th><th>Team</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <td><strong>@user.FullName</strong></td>
+                    <td>@user.Email</td>
+                    <td>
+                        <form asp-action="ChangeRole" method="post" class="btn-row">
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <select name="role" aria-label="Role for @user.FullName">
+                                @foreach (var option in Enum.GetValues<UserRole>())
+                                {
+                                    <option value="@option" selected="@(user.Role == option.ToString())">@option</option>
+                                }
+                            </select>
+                            <button class="btn secondary small" type="submit">Save</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="AssignTeam" method="post" class="btn-row">
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <select name="teamId" aria-label="Team for @user.FullName">
+                                <option value="">No team</option>
+                                @foreach (var team in Model.Teams)
+                                {
+                                    <option value="@team.Value" selected="@(user.TeamId?.ToString() == team.Value)">@team.Text</option>
+                                }
+                            </select>
+                            <button class="btn secondary small" type="submit">Save</button>
+                        </form>
+                    </td>
+                    <td>
+                        @if (user.IsActive)
+                        {
+                            <span class="pill status-Done">Active</span>
+                        }
+                        else
+                        {
+                            <span class="pill danger">Deactivated</span>
+                        }
+                    </td>
+                    <td>
+                        <form asp-action="SetActive" method="post" class="inline-form">
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <input type="hidden" name="isActive" value="@((!user.IsActive).ToString().ToLowerInvariant())" />
+                            <button class="btn @(user.IsActive ? "danger" : "secondary") small" type="submit">
+                                @(user.IsActive ? "Deactivate" : "Reactivate")
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

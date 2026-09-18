@@ -1,0 +1,57 @@
+@model List<TeamDto>
+@{
+    ViewData["Title"] = "Teams";
+    var role = User.GetRole();
+}
+
+<div class="page-head">
+    <div>
+        <h1>Teams</h1>
+        <p class="sub">Who works together, and who leads them.</p>
+    </div>
+    @if (role == UserRole.Admin)
+    {
+        <a class="btn" asp-action="Create">New team</a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty">
+        <p>No teams to show.</p>
+        @if (role == UserRole.Admin)
+        {
+            <a class="btn" asp-action="Create">Create the first team</a>
+        }
+    </div>
+}
+else
+{
+    <div class="panel">
+        <div class="table-scroll">
+            <table>
+                <thead>
+                <tr><th>Team</th><th>Lead</th><th>People</th><th>Open tasks</th><th></th></tr>
+                </thead>
+                <tbody>
+                @foreach (var team in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@team.Name</strong>
+                            @if (!string.IsNullOrWhiteSpace(team.Description))
+                            {
+                                <div class="hint">@team.Description</div>
+                            }
+                        </td>
+                        <td>@(team.ManagerName ?? "Unassigned")</td>
+                        <td>@team.MemberCount</td>
+                        <td>@team.OpenTaskCount</td>
+                        <td><a class="btn secondary small" asp-action="Details" asp-route-id="@team.Id">Open</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

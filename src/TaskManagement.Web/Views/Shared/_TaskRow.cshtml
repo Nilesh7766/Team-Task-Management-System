@@ -1,0 +1,18 @@
+@model TaskDto
+<a class="task-row s-@Model.Status @(Model.IsOverdue ? "overdue" : "")"
+   asp-controller="Tasks" asp-action="Details" asp-route-id="@Model.Id">
+    <span class="t">@Model.Title</span>
+    <span class="meta">
+        <span class="pill status-@Model.Status">@(Model.Status == "InProgress" ? "In Progress" : Model.Status == "ToDo" ? "To Do" : "Done")</span>
+        <span class="pill prio-@Model.Priority">@Model.Priority</span>
+        <span>@(Model.AssignedToName ?? "Unassigned")</span>
+        @if (Model.DueDate.HasValue)
+        {
+            <span class="date">@(Model.IsOverdue ? "Overdue " : "Due ")@Model.DueDate.Value.ToString("dd MMM yyyy")</span>
+        }
+        @if (Model.CommentCount > 0)
+        {
+            <span>@Model.CommentCount comment@(Model.CommentCount == 1 ? "" : "s")</span>
+        }
+    </span>
+</a>

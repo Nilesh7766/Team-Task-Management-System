@@ -1,0 +1,38 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Sign in";
+    Layout = "_AuthLayout";
+}
+
+<h1>Sign in</h1>
+@* <p class="sub">Track what your team is working on and what is due next.</p> *@
+
+<form asp-action="Login" method="post">
+    <div asp-validation-summary="ModelOnly" class="note bad validation-summary-errors" role="alert"></div>
+    <input type="hidden" asp-for="ReturnUrl" />
+
+    <div class="field">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" autocomplete="username" autofocus placeholder="Enter Email" />
+        <span asp-validation-for="Email" class="field-validation-error"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" autocomplete="current-password" placeholder="Enter Password" />
+        <span asp-validation-for="Password" class="field-validation-error"></span>
+    </div>
+
+    <p class="hint" style="margin:.4rem 0 1rem; text-align:right;"><a asp-action="ForgotPassword">Forgot password?</a></p>
+
+    <button class="btn" type="submit">Sign in</button>
+</form>
+
+<p class="hint" style="margin-top:.9rem;">No account yet? <a asp-action="Register">Create one</a>.</p>
+
+@* <div class="demo-keys">
+    <strong>Demo accounts</strong>
+    <div>Admin — <code>admin@tms.com</code> / <code>Admin@123</code></div>
+    <div>Manager — <code>manager@tms.com</code> / <code>Manager@123</code></div>
+    <div>User — <code>user1@tms.com</code> / <code>User@123</code></div>
+</div> *@

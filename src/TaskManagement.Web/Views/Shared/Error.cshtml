@@ -1,0 +1,11 @@
+@{
+    ViewData["Title"] = "Problem";
+    var code = ViewBag.Code ?? 500;
+    var message = ViewBag.Message as string ?? "The request could not be completed.";
+}
+<div class="error-page">
+    <div class="code">@code</div>
+    <h1>@message</h1>
+    <p style="margin-inline:auto;">Head back to the dashboard and try again from there.</p>
+    <a class="btn" asp-controller="Dashboard" asp-action="Index">Go to dashboard</a>
+</div>

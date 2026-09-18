@@ -1,0 +1,21 @@
+@model TaskFormViewModel
+@{
+    ViewData["Title"] = "New task";
+}
+
+<div class="page-head">
+    <div>
+        <h1>New task</h1>
+        <p class="sub">Assign it now or leave it unassigned and pick someone later.</p>
+    </div>
+</div>
+
+<div class="panel">
+    <form asp-action="Create" method="post">
+        @await Html.PartialAsync("_Form", Model)
+        <div class="btn-row">
+            <button class="btn btn-outline" type="submit">Create task</button>
+            <a class="btn secondary" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</div>
