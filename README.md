@@ -252,9 +252,7 @@ docs/                     Database notes, API notes, Postman collection, demo sc
 
 * \[x] GitHub repository with the backend and the frontend organised in one solution
 * \[x] README with setup steps, sample credentials, and the stack
-* \[x] Swagger docs and a Postman collection
-* \[x] Unit tests
 * \[x] GitHub Actions CI
-* \[ ] Deployed demo link — add yours here
+* \[ ] Deployed demo link — https://github.com/Nilesh7766/Team-Task-Management-System.git
 * \[ ] 5–8 minute walkthrough video — add the link here (`docs/DEMO\_SCRIPT.md` has a running order)
 
